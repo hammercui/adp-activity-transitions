@@ -28,10 +28,12 @@ import com.squareup.picasso.RequestCreator;
 
 import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.alexjlockwood.activity.transitions.Constants.ALBUM_IMAGE_URLS;
 import static com.alexjlockwood.activity.transitions.Constants.ALBUM_NAMES;
@@ -99,7 +101,7 @@ public class PreviewActivity extends AppCompatActivity {
             public void onTransitionEnd(Transition transition) {
                 Log.d(TAG,"onTransitionEnd:"+new Date().toString());
                 if(mIsEntering){
-                   // handlerEnterEnd();
+                   mImagePageAdapter.handlerEnterEnd();
                 }
             }
 
@@ -136,7 +138,8 @@ public class PreviewActivity extends AppCompatActivity {
                 //返回动画，重新绑定
                 if(mIsReturning ){
 //                    final String shareName = ALBUM_NAMES[mCurrentPosition];
-                    View view = mImagePageAdapter.getShareViewByPosition(mViewPager,mCurrentPosition);
+                    //View view = mImagePageAdapter.getShareViewByPosition(mViewPager,mCurrentPosition);
+                    View view = mImagePageAdapter.shareView;
                     if(view != null){
                         names.clear();
                         names.add(view.getTransitionName());
@@ -154,11 +157,11 @@ public class PreviewActivity extends AppCompatActivity {
     }
 
 
-//    @Override
-//    public void onBackPressed() {
-//        handlerExitStart();
-//        super.onBackPressed();
-//    }
+    @Override
+    public void onBackPressed() {
+       mImagePageAdapter.handlerExitStart(mViewPager,mCurrentPosition);
+        super.onBackPressed();
+    }
 
     @Override
     public void finishAfterTransition() {
@@ -208,6 +211,7 @@ public class PreviewActivity extends AppCompatActivity {
             this.mLayoutInflater = LayoutInflater.from(previewActivity);
             mWeakReference  = new WeakReference<PreviewActivity>(previewActivity);
         }
+        private ImageView shareView;
 
         public void setStartPosition(int position){
             startPosition = position;
@@ -223,43 +227,47 @@ public class PreviewActivity extends AppCompatActivity {
             return view == object;
         }
 
+        private Map<Integer,PhotoViewAttacher> mPhotoViewAttacherMap = new HashMap<>();
 
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
-            final PhotoView view =  (PhotoView) mLayoutInflater.inflate(R.layout.adapter_preview,container,false);
+            final ImageView view =  (ImageView) mLayoutInflater.inflate(R.layout.adapter_preview,container,false);
             String albumImageUrl = ALBUM_IMAGE_URLS[position];
             String albumName = ALBUM_NAMES[position];
             if(Utils.isLOLLIPOP())
                 view.setTransitionName(albumName);
 
             if(mWeakReference.get().mIsEntering && position == startPosition){
-                Log.d(TAG,"进入详情页："+view.getTransitionName());
+                shareView = view;
+                //Log.d(TAG,"进入详情页："+view.getTransitionName());
                 RequestCreator albumImageRequest = Picasso.with(mWeakReference.get()).load(albumImageUrl);
                 //渲染图片成功
-                albumImageRequest.into(view, new Callback() {
+                albumImageRequest.into(shareView, new Callback() {
                     @Override
                     public void onSuccess() {
-                        startPostponedEnterTransition(view);
+                        startPostponedEnterTransition();
                     }
 
                     @Override
                     public void onError() {
-                        startPostponedEnterTransition(view);
+                        startPostponedEnterTransition();
                     }
                 });
             }
             else{
                 Picasso.with(mWeakReference.get()).load(albumImageUrl).into(view);
+                PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(view);
+                mPhotoViewAttacherMap.put(position,photoViewAttacher);
+                view.requestLayout();
             }
-//            PhotoView photoView = (PhotoView)view.findViewById(R.id.photoView);
-//            ImageView imageView = (ImageView)view.findViewById(R.id.imageView);
+
 
             view.setTag(position);
             container.addView(view);
             return view;
         }
 
-        public View getShareViewByPosition(ViewPager viewPager,int position){
+        public ImageView getShareViewByPosition(ViewPager viewPager,int position){
             ImageView view = (ImageView)viewPager.findViewWithTag(position);
             view.setScaleType(ImageView.ScaleType.FIT_CENTER);
             ViewGroup.LayoutParams params  = view.getLayoutParams();
@@ -274,16 +282,38 @@ public class PreviewActivity extends AppCompatActivity {
             container.removeView((View)object);
         }
 
-        private void startPostponedEnterTransition(final View view) {
-                view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        private void startPostponedEnterTransition() {
+            if(shareView == null)
+                return;
+            shareView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
-                        view.getViewTreeObserver().removeOnPreDrawListener(this);
+                        shareView.getViewTreeObserver().removeOnPreDrawListener(this);
                         mWeakReference.get().startPostponedEnterTransition();
                         return true;
                     }
                 });
         }
+
+        /**
+         * 进入动画结束
+         */
+        public void handlerEnterEnd() {
+            if(shareView == null)
+                return;
+            PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(shareView);
+            mPhotoViewAttacherMap.put(startPosition,photoViewAttacher);
+        }
+
+        public void handlerExitStart(ViewPager viewPager,int position){
+            shareView = getShareViewByPosition(viewPager,position);
+            PhotoViewAttacher photoViewAttacher = mPhotoViewAttacherMap.get(position);
+            photoViewAttacher.cleanup();
+           // photoViewAttacher = null;
+        }
+
+
+
     }
 
 }
