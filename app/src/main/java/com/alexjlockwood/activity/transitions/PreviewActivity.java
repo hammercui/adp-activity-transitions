@@ -256,9 +256,9 @@ public class PreviewActivity extends AppCompatActivity {
             }
             else{
                 Picasso.with(mWeakReference.get()).load(albumImageUrl).into(view);
-                PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(view);
-                mPhotoViewAttacherMap.put(position,photoViewAttacher);
-                view.requestLayout();
+               // PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(view);
+                //mPhotoViewAttacherMap.put(position,photoViewAttacher);
+                //view.requestLayout();
             }
 
 
@@ -301,17 +301,18 @@ public class PreviewActivity extends AppCompatActivity {
         public void handlerEnterEnd() {
             if(shareView == null)
                 return;
-            PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(shareView);
-            mPhotoViewAttacherMap.put(startPosition,photoViewAttacher);
+           // PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(shareView);
+           // mPhotoViewAttacherMap.put(startPosition,photoViewAttacher);
         }
 
         public void handlerExitStart(ViewPager viewPager,int position){
             shareView = getShareViewByPosition(viewPager,position);
-            PhotoViewAttacher photoViewAttacher = mPhotoViewAttacherMap.get(position);
-            photoViewAttacher.cleanup();
+            //PhotoViewAttacher photoViewAttacher = mPhotoViewAttacherMap.get(position);
+            shareView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            //photoViewAttacher = null;
+            //photoViewAttacher.cleanup();
            // photoViewAttacher = null;
         }
-
 
 
     }
