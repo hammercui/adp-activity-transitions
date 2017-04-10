@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -32,8 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.alexjlockwood.activity.transitions.Constants.ALBUM_IMAGE_URLS;
 import static com.alexjlockwood.activity.transitions.Constants.ALBUM_NAMES;
@@ -227,11 +226,16 @@ public class PreviewActivity extends AppCompatActivity {
             return view == object;
         }
 
-        private Map<Integer,PhotoViewAttacher> mPhotoViewAttacherMap = new HashMap<>();
+       // private Map<Integer,PhotoViewAttacher> mPhotoViewAttacherMap = new HashMap<>();
 
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
-            final ImageView view =  (ImageView) mLayoutInflater.inflate(R.layout.adapter_preview,container,false);
+           // final ImageView view =  (ImageView) mLayoutInflater.inflate(R.layout.adapter_preview,container,false);
+            PhotoView view = new PhotoView(mWeakReference.get());
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            view.setLayoutParams(layoutParams);
+
+
             String albumImageUrl = ALBUM_IMAGE_URLS[position];
             String albumName = ALBUM_NAMES[position];
             if(Utils.isLOLLIPOP())
@@ -308,7 +312,7 @@ public class PreviewActivity extends AppCompatActivity {
         public void handlerExitStart(ViewPager viewPager,int position){
             shareView = getShareViewByPosition(viewPager,position);
             //PhotoViewAttacher photoViewAttacher = mPhotoViewAttacherMap.get(position);
-            shareView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            //shareView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             //photoViewAttacher = null;
             //photoViewAttacher.cleanup();
            // photoViewAttacher = null;
