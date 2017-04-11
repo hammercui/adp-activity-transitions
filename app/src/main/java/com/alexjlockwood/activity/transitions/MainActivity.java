@@ -33,15 +33,16 @@ public class MainActivity extends AppCompatActivity {
 
     static final String EXTRA_STARTING_ALBUM_POSITION = "extra_starting_item_position";
     static final String EXTRA_CURRENT_ALBUM_POSITION = "extra_current_item_position";
-
+    static final String EXTRA_SHARE_ZOOM_INFO = "extra_share_zoom_info";
     private RecyclerView mRecyclerView;
     private Bundle mTmpReenterState;
     private boolean mIsDetailsActivityStarted;
     public static int thumbWidth = 0;
     private CardAdapter mCardAdapter;
-    RadioGroup mRadioGroup;
-    RadioButton mRadioButton1,mRadioButton2;
+//    RadioGroup mRadioGroup;
+//    RadioButton mRadioButton1,mRadioButton2;
     private boolean isImageMode = true; //是图片模式还是文章模式
+    private boolean is5xVersion = true;//是5.x版本还是4.x版本
 
     /**
      * 初始化共享
@@ -98,23 +99,39 @@ public class MainActivity extends AppCompatActivity {
         thumbWidth = this.getResources().getDisplayMetrics().widthPixels / 3;
         initExitShare();
         setContentView(R.layout.activity_main_test);
-
+        //resetWindowBackground();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,
                 getResources().getInteger(R.integer.activity_main_num_grid_columns)));
         mCardAdapter = new CardAdapter();
         mRecyclerView.setAdapter(mCardAdapter);
 
-        mRadioGroup = (RadioGroup)this.findViewById(R.id.radioGroup);
-        mRadioButton1 = (RadioButton)this.findViewById(R.id.radioButton_article);
-        mRadioButton2 = (RadioButton) findViewById(R.id.radioButton_image);
-        mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        //模式
+        RadioGroup radioGroupMode = (RadioGroup)this.findViewById(R.id.radioGroup_mode);
+        RadioButton radioButtonArticle = (RadioButton)this.findViewById(R.id.radioButton_article);
+        final RadioButton radioButtonImage = (RadioButton) findViewById(R.id.radioButton_image);
+        radioGroupMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                isImageMode = mRadioButton2.getId() == checkedId;
+                isImageMode = radioButtonImage.getId() == checkedId;
+            }
+        });
+        //版本
+        RadioGroup radioGroupVersion = (RadioGroup)this.findViewById(R.id.radioGroup_version);
+        final RadioButton radioButton5X = (RadioButton)this.findViewById(R.id.radioButton_5x);
+        final RadioButton radioButton4X = (RadioButton) findViewById(R.id.radioButton_4x);
+        radioGroupVersion.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                is5xVersion = radioButton5X.getId() == checkedId;
+                //resetWindowBackground();
             }
         });
     }
+
+//    private void resetWindowBackground(){
+//        getWindow().setBackgroundDrawableResource(is5xVersion?android.R.color.black:android.R.color.transparent);
+//    }
 
     @Override
     protected void onResume() {
@@ -216,14 +233,19 @@ public class MainActivity extends AppCompatActivity {
 
             if (!mIsDetailsActivityStarted) {
                 mIsDetailsActivityStarted = true;
-                if(Utils.isLOLLIPOP()){
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,
-                            mAlbumImage, mAlbumImage.getTransitionName()).toBundle());
-//                    startActivity(intent, ActivityOptions.makeScaleUpAnimation(mAlbumImage,mAlbumImage.getWidth()/2,mAlbumImage.getHeight()/2,0,0).toBundle());
+                if(is5xVersion){
+                    if(Utils.isLOLLIPOP()){
+                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,
+                                mAlbumImage, mAlbumImage.getTransitionName()).toBundle());
+                    }
+                    else{
+                        startActivity(intent);
+                    }
                 }
                 else{
-                    startActivity(intent);
+                    PreviewActivity4x.startCustomActivity(MainActivity.this,isImageMode,v,mAlbumPosition);
                 }
+
 
             }
         }

@@ -202,7 +202,7 @@ public class PreviewActivity extends AppCompatActivity {
 //    }
 
 
-    public static class ImagePageAdapter extends PagerAdapter{
+    private static class ImagePageAdapter extends PagerAdapter{
         private LayoutInflater mLayoutInflater;
         private WeakReference<PreviewActivity> mWeakReference ;
         private int startPosition;
@@ -298,6 +298,8 @@ public class PreviewActivity extends AppCompatActivity {
                     }
                 });
         }
+
+
 
         /**
          * 进入动画结束

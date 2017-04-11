@@ -6,10 +6,20 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.Preview" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.Preview5x" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.Preview4x" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="AppTheme.Details" parent="Theme.AppCompat.Light.NoActionBar">
@@ -20,6 +30,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
+
     </style>
 
 </resources>

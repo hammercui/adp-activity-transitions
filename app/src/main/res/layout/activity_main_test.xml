@@ -20,9 +20,10 @@
             <!--android:textColor="#ffffff"-->
             <!--android:text="头部"/>-->
         <RadioGroup
-            android:id="@+id/radioGroup"
+            android:id="@+id/radioGroup_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:background="#ffffff"
             android:orientation="horizontal">
             <RadioButton
@@ -36,6 +37,26 @@
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="图片模式"/>
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/radioGroup_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="#ffffff"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/radioButton_5x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="5.x版本"/>
+            <RadioButton
+                android:id="@+id/radioButton_4x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.x版本"/>
         </RadioGroup>
     </RelativeLayout>
 
